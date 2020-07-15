@@ -7,7 +7,7 @@ DownLoc = "xxxxxxxxx"
 
 def GetStreetLL(Lat,Lon,Head,File,SaveLoc):
     base = r"https://maps.googleapis.com/maps/api/streetview"
-    size = r"?size=1200x800&fov=60&location="
+    size = r"?size=1200x800&fov=120&location="
     end = str(Lat) + "," + str(Lon) + "&heading=" + str(Head) + key
     MyUrl = base + size + end
     print(MyUrl)
