@@ -1,3 +1,25 @@
+from __future__ import print_function
+import sys
+import os
+from argparse import ArgumentParser, SUPPRESS
+import cv2
+import numpy as np
+import logging as log
+from time import time
+from openvino.inference_engine import IECore
+
+def comfort_level(sidewalk_ratio, terrain_ratio, vegetation_ratio, fence_ratio, truck_ratio, traffic_light_ratio, traffic_sign_ratio, person_ratio, car_ratio, bicycle_ratio):
+    sum_comf=8*sidewalk_ratio+10*terrain_ratio+10*vegetation_ratio-10*fence_ratio-10*truck_ratio
+    print(sum_comf)
+    if sum_comf<2:
+        print("bad ")
+    elif sum_comf<=5:
+        print("ok")
+    elif sum_comf<=10:
+        print("good")
+    else:
+        print ("perfectly")
+
 def class_size(road,sidewalk,building,wall,fence,pole,traffic_light,traffic_sign,vegetation,terrain,sky,
                    person,rider,car,truck,
                    bus,train,motorcycle,bicycle,ego_vehicle,cl21):
@@ -30,18 +52,10 @@ def class_size(road,sidewalk,building,wall,fence,pole,traffic_light,traffic_sign
           " sky=", sky_ratio," person=", person_ratio," rider=", rider_ratio," car=", car_ratio," truck=",
           truck_ratio," bus=", bus_ratio," train=", train_ratio," motorcycle=", motorcycle_ratio," bicycle=",
           bicycle_ratio," ego_vehicle=", ego_vehicle_ratio," cl21=", cl21_ratio)
-    print(road_ratio+sidewalk_ratio+building_ratio+wall_ratio+fence_ratio+pole_ratio+traffic_light_ratio+traffic_sign_ratio+vegetation_ratio+terrain_ratio+sky_ratio+person_ratio+rider_ratio+car_ratio+truck_ratio+bus_ratio+train_ratio+motorcycle_ratio+bicycle_ratio+ego_vehicle_ratio+cl21_ratio)
+    #print(road_ratio+sidewalk_ratio+building_ratio+wall_ratio+fence_ratio+pole_ratio+traffic_light_ratio+traffic_sign_ratio+vegetation_ratio+terrain_ratio+sky_ratio+person_ratio+rider_ratio+car_ratio+truck_ratio+bus_ratio+train_ratio+motorcycle_ratio+bicycle_ratio+ego_vehicle_ratio+cl21_ratio)
+    comfort_level(sidewalk_ratio, terrain_ratio, vegetation_ratio, fence_ratio, truck_ratio, traffic_light_ratio,
+                  traffic_sign_ratio, person_ratio, car_ratio, bicycle_ratio)
 
-
-from __future__ import print_function
-import sys
-import os
-from argparse import ArgumentParser, SUPPRESS
-import cv2
-import numpy as np
-import logging as log
-from time import time
-from openvino.inference_engine import IECore
 
 classes_color_map = {
     'road': (150, 150, 150),  # road (и вода тут) cl1
@@ -89,8 +103,7 @@ def build_argparser():
 
 
 model = "semantic-segmentation-adas-0001.xml"
-input = ["Screenshot (1).png", "Screenshot (2).png", "Screenshot (3).png", "Screenshot (4).png", "Screenshot (5).png",
-         "Screenshot (6).png", "Screenshot (7).png", "Screenshot (8).png", "Screenshot (9).png", "Screenshot (10).png"]
+input=["Image_9_0.png","Image_9_120.png","Image_9_240.png"]
 cpu_extension = None
 device = 'CPU'
 number_top = 10
@@ -234,29 +247,8 @@ def main():
         out_img = os.path.join(os.path.dirname('__file__'), "out_{}.bmp".format(batch))
         cv2.imwrite(out_img, classes_map)
         log.info("Result image was saved to {}".format(out_img))
-        class_size(road, sidewalk, building, wall, fence, pole, traffic_light, traffic_sign, vegetation, terrain, sky,
-                   person, rider, car, truck, bus, train, motorcycle, bicycle, ego_vehicle, cl21)
-        road = 0
-        sidewalk = 0
-        building = 0
-        wall = 0
-        fence = 0
-        pole = 0
-        traffic_light = 0
-        traffic_sign = 0
-        vegetation = 0
-        terrain = 0
-        sky = 0
-        person = 0
-        rider = 0
-        car = 0
-        truck = 0
-        bus = 0
-        train = 0
-        motorcycle = 0
-        bicycle = 0
-        ego_vehicle = 0
-        cl21 = 0
+    class_size(road, sidewalk, building, wall, fence, pole, traffic_light, traffic_sign, vegetation, terrain, sky,
+               person, rider, car, truck, bus, train, motorcycle, bicycle, ego_vehicle, cl21)
 
     log.info(
         "This demo is an API example, for any performance measurements please use the dedicated benchmark_app tool "
