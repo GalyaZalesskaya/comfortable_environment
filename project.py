@@ -9,8 +9,9 @@ import logging as log
 from time import time
 from openvino.inference_engine import IECore
 import glob
+
 def class_size(cl1,cl2,cl3,cl4,cl5,cl6,cl7,cl8,cl9,cl10,cl11,cl12,cl13,cl14,cl15,cl16,cl17,cl18,cl19,cl20,cl21):
-    sum_cl=cl1+cl2+cl3+cl4+cl5+cl6+cl7+cl8+cl9+cl10+cl11+cl12+cl13+cl14+cl15+cl16+cl17+cl18+cl9+cl20+cl21
+    sum_cl=cl1+cl2+cl3+cl4+cl5+cl6+cl7+cl8+cl9+cl10+cl11+cl12+cl13+cl14+cl15+cl16+cl17+cl18+cl19+cl20+cl21
     cl1_ratio=cl1/sum_cl
     cl2_ratio=cl2/sum_cl
     cl3_ratio=cl3/sum_cl
@@ -34,7 +35,7 @@ def class_size(cl1,cl2,cl3,cl4,cl5,cl6,cl7,cl8,cl9,cl10,cl11,cl12,cl13,cl14,cl15
     cl21_ratio=cl21/sum_cl
     sum_cl_ratio=cl1_ratio+cl2_ratio+cl3_ratio+cl4_ratio+cl5_ratio+cl6_ratio+cl7_ratio+cl8_ratio+cl9_ratio+cl10_ratio+cl11_ratio+cl12_ratio+cl13_ratio+cl14_ratio+cl15_ratio+cl16_ratio+cl17_ratio+cl18_ratio+cl19_ratio+cl20_ratio+cl21_ratio
     print("Resalt raiting:"
-          "\n road          ",cl1_ratio,
+          "\n road          ", cl1_ratio,
           "\n sidewalk      ", cl2_ratio,
           "\n building      ", cl3_ratio,
           "\n wall          ", cl4_ratio,
@@ -55,8 +56,27 @@ def class_size(cl1,cl2,cl3,cl4,cl5,cl6,cl7,cl8,cl9,cl10,cl11,cl12,cl13,cl14,cl15
           "\n bicycle       ", cl19_ratio,
           "\n ego-vehicle?? ", cl20_ratio,
           "\n ?????         ", cl21_ratio)
-    print(sum_cl_ratio)
-    print(sum_cl)
+    print(comfort_level_picture(cl1_ratio,cl2_ratio,cl3_ratio,cl4_ratio,cl5_ratio,cl6_ratio,cl7_ratio,cl8_ratio,cl9_ratio,cl10_ratio,cl11_ratio,cl12_ratio,cl13_ratio,cl14_ratio,cl15_ratio,cl16_ratio,cl17_ratio,cl18_ratio,cl19_ratio,cl20_ratio,cl21_ratio))
+    return comfort_level_picture(cl1_ratio,cl2_ratio,cl3_ratio,cl4_ratio,cl5_ratio,cl6_ratio,cl7_ratio,cl8_ratio,cl9_ratio,cl10_ratio,cl11_ratio,cl12_ratio,cl13_ratio,cl14_ratio,cl15_ratio,cl16_ratio,cl17_ratio,cl18_ratio,cl19_ratio,cl20_ratio,cl21_ratio)
+
+    #print(sum_cl_ratio)
+    #print(sum_cl)
+
+def comfort_level_picture(cl1,cl2,cl3,cl4,cl5,cl6,cl7,cl8,cl9,cl10,cl11,cl12,cl13,cl14,cl15,cl16,cl17,cl18,cl19,cl20,cl21):
+    weight=[0, 8, 0, 0, -10, 0, 0, 0, 10, 10, 0, 0, 0, 0, -10, 0, 0, 0, 0, 0, 0]
+    sum_comf=weight[0]*cl1+weight[1]*cl2+weight[2]*cl3+weight[3]*cl4+weight[4]*cl5+weight[5]*cl6+weight[6]*cl7+weight[7]*cl8+weight[8]*cl9+weight[9]*cl10+weight[10]*cl11+weight[11]*cl12+weight[12]*cl13+weight[13]*cl14+weight[14]*cl15+weight[15]*cl16+weight[16]*cl17+weight[17]*cl18+weight[18]*cl19+weight[19]*cl20+weight[20]*cl21
+    return sum_comf
+
+def comfort_level_coordinate(mark):
+    print("Comfortable mark:  ", mark)
+    if mark<0:
+        print("Сomfort - bad")
+    elif mark<=3:
+        print("Сomfort - ok")
+    elif mark<=8:
+        print("Сomfort - good")
+    else:
+        print ("Сomfort - perfectly")
 
 classes_color_map = [
     (150, 150, 150),# road (и вода тут) cl1
@@ -82,37 +102,15 @@ classes_color_map = [
     (71, 30, 204),#????? cl21
 ]
 #N = len(classes_color_map)
-
-"""
-def build_argparser():
-    parser = ArgumentParser(add_help=False)
-    args = parser.add_argument_group('Options')
-    args.add_argument('-h', '--help', action='help', default=SUPPRESS, help='Show this help message and exit.')
-    args.add_argument("-m", "--model", help="Required. Path to an .xml file with a trained model",
-                      required=True, type=str)
-    args.add_argument("-i", "--input", help="Required. Path to a folder with images or path to an image files",
-                      required=True, type=str, nargs="+")
-    args.add_argument("-l", "--cpu_extension",
-                      help="Optional. Required for CPU custom layers. "
-                           "Absolute MKLDNN (CPU)-targeted custom layers. Absolute path to a shared library with the "
-                           "kernels implementations", type=str, default=None)
-    args.add_argument("-d", "--device",
-                      help="Optional. Specify the target device to infer on; CPU, GPU, FPGA, HDDL or MYRIAD is "
-                           "acceptable. Sample will look for a suitable plugin for device specified. Default value is CPU",
-                      default="CPU", type=str)
-    args.add_argument("-nt", "--number_top", help="Optional. Number of top results", default=10, type=int)
-    return parser
-"""
-
 model = 'semantic-segmentation-adas-0001.xml'
 cpu_extension=None
 device='CPU'
 number_top=10
 
-folders = glob.glob('pictures')
+folders = glob.glob('pictures_in')
 input = []
-for folder in folders:
-       for f in glob.glob(folder+'/*.bmp'):
+for file in folders:
+       for f in glob.glob(file+'/*.png'):
            input.append(f)
 
 print(input)
@@ -183,6 +181,7 @@ def main():
         raise Exception("Unexpected output blob shape {}. Only 4D and 3D output blobs are supported".format(res.shape))  
         
     #classes=np.zeros(N)
+    sum_mark=0
     for batch, data in enumerate(res):
         cl1=0
         cl2=0
@@ -255,12 +254,15 @@ def main():
                     cl20+=1
                 else:
                     cl21+=1
-        class_size(cl1,cl2,cl3,cl4,cl5,cl6,cl7,cl8,cl9,cl10,cl11,cl12,cl13,cl14,cl15,cl16,cl17,cl18,cl19,cl20,cl21)
-        out_img = os.path.join(os.path.dirname('__file__'), "out_{}.bmp".format(batch))
+        sum_mark+=class_size(cl1,cl2,cl3,cl4,cl5,cl6,cl7,cl8,cl9,cl10,cl11,cl12,cl13,cl14,cl15,cl16,cl17,cl18,cl19,cl20,cl21)
+        out_img = os.path.join(os.path.dirname('__file__'), "pictures_out/out_{}.bmp".format(batch))
         cv2.imwrite(out_img, classes_map)
         log.info("Result image was saved to {}".format(out_img))
     log.info("This demo is an API example, for any performance measurements please use the dedicated benchmark_app tool "
              "from the openVINO toolkit\n")
+    sum_mark=sum_mark/3.
+    comfort_level_coordinate(sum_mark)
 
 if __name__ == '__main__':
     sys.exit(main() or 0)
+    
