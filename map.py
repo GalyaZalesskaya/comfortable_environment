@@ -1,30 +1,30 @@
 import requests, sys, os
+from PIL import Image
 
 
-class MapParams(object):
-    def __init__(self):
-        self.lat = 56.326210
-        self.lon = 44.079732
-        self.zoom = 16
-        self.type = "map"
+def coordinates(x, y):
+    lat = x
+    lon = y
+    zoom = 16
+    type = "map"
+    return (type, zoom, lat, lon)
 
-    def ll(self):
-        return str(self.lon) + "," + str(self.lat)
+
+def ll(lat, lon):
+    return str(lon) + "," + str(lat)
 
 def load_map(mp):
-    map_request = "http://static-maps.yandex.ru/1.x/?ll={ll}&z={z}&l={type}".format(ll=mp.ll(), z=mp.zoom, type=mp.type)
+    map_request = "http://static-maps.yandex.ru/1.x/?ll={ll}&z={z}&l={type}".format(ll=ll(mp[2],mp[3]), z=mp[1], type=mp[0])
     response = requests.get(map_request)
     map_file = "map.jpg"
     with open(map_file, "wb") as file:
             file.write(response.content)
     return map_file
 
-mp = MapParams()
+mp = coordinates(56.302358, 43.905130)
 load_map(mp)
 
-from PIL import Image
-
-im = Image.open('map.jpg')
+im = Image.open('map.jpg').convert('RGB')
 
 water = 0
 vegetation = 0
@@ -33,9 +33,9 @@ k = 0
 for pixel in im.getdata():
     k += 1
     # print(pixel)
-    if pixel == (227) or pixel == (229):
+    if pixel == (184, 223, 245):
         water += 1
-    elif pixel == (214):
+    elif pixel == (215, 242, 194) or pixel == (216, 242, 194) or pixel == (233, 248, 221):
         vegetation += 1
 
-print('water=', water, ', vegetation=', vegetation, k)
+print('water=', water / k, ', vegetation=', vegetation / k)
