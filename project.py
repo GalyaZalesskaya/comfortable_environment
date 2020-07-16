@@ -2,11 +2,13 @@ from __future__ import print_function
 import sys
 import os
 from argparse import ArgumentParser, SUPPRESS
+
 import cv2
 import numpy as np
 import logging as log
 from time import time
 from openvino.inference_engine import IECore
+
 
 def comfort_level(sidewalk_ratio, terrain_ratio, vegetation_ratio, fence_ratio, truck_ratio, traffic_light_ratio, traffic_sign_ratio, person_ratio, car_ratio, bicycle_ratio):
     sum_comf=8*sidewalk_ratio+10*terrain_ratio+10*vegetation_ratio-10*fence_ratio-10*truck_ratio
