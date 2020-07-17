@@ -1,6 +1,7 @@
 import numpy as np 
 from imagesapi import imagesCoordinatesAPI
 from segmentation import imagesCoordinatesSegmentation
+from map import marksMapsWaterVegatation
 #import math as m
 
 central_point_lat = 56.281279 
@@ -11,9 +12,8 @@ dlon = 0.016 #  шаг dlon 0.016 = 1 км на восток (получено �
 
 def findCoordAroundPoint(Lat, Lon, radius):
 	#функция ищет равномерно координаты в окрестности в квадрате радиуса r
-	global N
 	listcoord = []
-	step = 100. # шаг в метрах
+	step = 150. # шаг в метрах
 	steplat = dlat*step/1000. 
 	steplon = dlon *step/1000.
 	N = int(radius/step)
@@ -54,17 +54,43 @@ def findCoordAroundPoint(Lat, Lon, radius):
 	return listcoord
 
 def markComfortArea(listcoord):
-	imagesCoordinatesAPI(listcoord)
-	marklist=[]
+	#imagesCoordinatesAPI(listcoord)
+	global sum_mark
+	flaglist=[]
 	print("All coordinates is ", len(listcoord))
-	for i in range(len(listcoord)):
-		marklist.append(imagesCoordinatesSegmentation(i))
-	return sum(marklist)/N
+	Marklist=imagesCoordinatesSegmentation()
+	addition_mark = marksMapsWaterVegatation(central_point_lat, central_point_lon)
+	print("оценки", Marklist)
+	print("доп. оценка", addition_mark)
+	for i in range(len(Marklist)):
+		Marklist[i]=0.5*(Marklist[i] + addition_mark)
+		print
+		if (i == 0):	
+			if Marklist[i]<0:
+				flaglist.append(str(listcoord[i][0])+","+str(listcoord[i][1])+","+"pm2rds")
+			elif Marklist[i]<=2:
+				flaglist.append(str(listcoord[i][0])+","+str(listcoord[i][1])+","+"pm2yws")
+			elif Marklist[i]<=5:
+				flaglist.append(str(listcoord[i][0])+","+str(listcoord[i][1])+","+"pm2ors")
+			else:
+				flaglist.append(str(listcoord[i][0])+","+str(listcoord[i][1])+","+"pm2gns")
+		else:
+			if Marklist[i]<0:
+				flaglist.append(str(listcoord[i][0])+","+str(listcoord[i][1])+","+"pmrds")
+			elif Marklist[i]<=2:
+				flaglist.append(str(listcoord[i][0])+","+str(listcoord[i][1])+","+"pm2yws")
+			elif Marklist[i]<=5:
+				flaglist.append(str(listcoord[i][0])+","+str(listcoord[i][1])+","+"pm2ors")
+			else:
+				flaglist.append(str(listcoord[i][0])+","+str(listcoord[i][1])+","+"pm2gns")
+	sum_mark=sum(Marklist)/len(Marklist)
+	return flaglist
 
 Listcoord=findCoordAroundPoint(central_point_lat, central_point_lon, r)
-print('Comfort of area: ', markComfortArea(Listcoord))
 
-
-
-#print(len(findCoordAroundPoint(central_point_lat, central_point_lon, 100.)))
-#print(findCoordAroundPoint(central_point_lat, central_point_lon, 100.))
+#marksMapsWaterVegatation(lat, lon):
+resultlist=markComfortArea(Listcoord)
+print("Resalt raiting:\n")
+for i in range(len(resultlist)):
+	print(resultlist[i], "\n")
+print('Comfort of area: ', sum_mark)
