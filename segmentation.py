@@ -9,6 +9,7 @@ import logging as log
 from time import time
 from openvino.inference_engine import IECore
 import glob
+from PIL import Image
 
 def class_size(cl1,cl2,cl3,cl4,cl5,cl6,cl7,cl8,cl9,cl10,cl11,cl12,cl13,cl14,cl15,cl16,cl17,cl18,cl19,cl20,cl21):
     sum_cl=cl1+cl2+cl3+cl4+cl5+cl6+cl7+cl8+cl9+cl10+cl11+cl12+cl13+cl14+cl15+cl16+cl17+cl18+cl19+cl20+cl21
@@ -95,9 +96,19 @@ def imagesCoordinatesSegmentation():
     folders = glob.glob('pictures_in')
     input = []
     for file in folders:
-           for f in glob.glob(file+'/*.png'):
+        for f in glob.glob(file+'/*.png'):
+            im = Image.open(f).convert('RGB')
+            numberallpixels=0
+            n=0
+            for pixel in im.getdata():
+                numberallpixels+=1
+                if pixel == (228, 227, 223):
+                    n+=1
+                if (n >= 50000):
+                    break
+            if (n < 50000):
                input.append(f)
-
+    print(input)
     log.basicConfig(format="[ %(levelname)s ] %(message)s", level=log.INFO, stream=sys.stdout)
     log.info("Creating Inference Engine")
     ie = IECore()
