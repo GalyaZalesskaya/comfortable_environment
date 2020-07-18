@@ -11,6 +11,8 @@ from openvino.inference_engine import IECore
 import glob
 from PIL import Image
 
+Down_lock_in = 'pictures_in'
+
 def class_size(cl1,cl2,cl3,cl4,cl5,cl6,cl7,cl8,cl9,cl10,cl11,cl12,cl13,cl14,cl15,cl16,cl17,cl18,cl19,cl20,cl21):
     sum_cl=cl1+cl2+cl3+cl4+cl5+cl6+cl7+cl8+cl9+cl10+cl11+cl12+cl13+cl14+cl15+cl16+cl17+cl18+cl19+cl20+cl21
     cl1_ratio=cl1/sum_cl
@@ -35,6 +37,7 @@ def class_size(cl1,cl2,cl3,cl4,cl5,cl6,cl7,cl8,cl9,cl10,cl11,cl12,cl13,cl14,cl15
     cl20_ratio=cl20/sum_cl
     cl21_ratio=cl21/sum_cl
     sum_cl_ratio=cl1_ratio+cl2_ratio+cl3_ratio+cl4_ratio+cl5_ratio+cl6_ratio+cl7_ratio+cl8_ratio+cl9_ratio+cl10_ratio+cl11_ratio+cl12_ratio+cl13_ratio+cl14_ratio+cl15_ratio+cl16_ratio+cl17_ratio+cl18_ratio+cl19_ratio+cl20_ratio+cl21_ratio
+    '''
     print("Resalt raiting:"
           "\n road          ", cl1_ratio,
           "\n sidewalk      ", cl2_ratio,
@@ -57,6 +60,7 @@ def class_size(cl1,cl2,cl3,cl4,cl5,cl6,cl7,cl8,cl9,cl10,cl11,cl12,cl13,cl14,cl15
           "\n bicycle       ", cl19_ratio,
           "\n ego-vehicle?? ", cl20_ratio,
           "\n ?????         ", cl21_ratio)
+'''
     return comfort_level(cl1_ratio,cl2_ratio,cl3_ratio,cl4_ratio,cl5_ratio,cl6_ratio,cl7_ratio,cl8_ratio,cl9_ratio,cl10_ratio,cl11_ratio,cl12_ratio,cl13_ratio,cl14_ratio,cl15_ratio,cl16_ratio,cl17_ratio,cl18_ratio,cl19_ratio,cl20_ratio,cl21_ratio)
 
 def comfort_level(cl1,cl2,cl3,cl4,cl5,cl6,cl7,cl8,cl9,cl10,cl11,cl12,cl13,cl14,cl15,cl16,cl17,cl18,cl19,cl20,cl21):
@@ -97,18 +101,8 @@ def imagesCoordinatesSegmentation():
     input = []
     for file in folders:
         for f in glob.glob(file+'/*.png'):
-            im = Image.open(f).convert('RGB')
-            numberallpixels=0
-            n=0
-            for pixel in im.getdata():
-                numberallpixels+=1
-                if pixel == (228, 227, 223):
-                    n+=1
-                if (n >= 50000):
-                    break
-            if (n < 50000):
-               input.append(f)
-    print(input)
+            input.append(f)
+
     log.basicConfig(format="[ %(levelname)s ] %(message)s", level=log.INFO, stream=sys.stdout)
     log.info("Creating Inference Engine")
     ie = IECore()
