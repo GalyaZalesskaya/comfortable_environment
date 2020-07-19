@@ -119,18 +119,18 @@ def markComfortArea(listcoord, indexeserror):
 		print
 		if (i == 0):
 			if Marklist[i] < 0.5:
-				flaglist.append(str(listcoord[i][1]) + "," + str(listcoord[i][0]) + "," + "pm2rds")
+				flaglist.append(str(listcoord[i][1]) + "," + str(listcoord[i][0]) + "," + "pm2rdm")
 			elif Marklist[i] <= 3:
-				flaglist.append(str(listcoord[i][1]) + "," + str(listcoord[i][0]) + "," + "pm2yws")
+				flaglist.append(str(listcoord[i][1]) + "," + str(listcoord[i][0]) + "," + "pm2ywm")
 			else:
-				flaglist.append(str(listcoord[i][1]) + "," + str(listcoord[i][0]) + "," + "pm2gns")
+				flaglist.append(str(listcoord[i][1]) + "," + str(listcoord[i][0]) + "," + "pm2gnm")
 		else:
 			if Marklist[i] < 0.5:
 				flaglist.append(str(listcoord[i][1]) + "," + str(listcoord[i][0]) + "," + "pmrds")
 			elif Marklist[i] <= 3:
-				flaglist.append(str(listcoord[i][1]) + "," + str(listcoord[i][0]) + "," + "pm2yws")
+				flaglist.append(str(listcoord[i][1]) + "," + str(listcoord[i][0]) + "," + "pmyws")
 			else:
-				flaglist.append(str(listcoord[i][1]) + "," + str(listcoord[i][0]) + "," + "pm2gns")
+				flaglist.append(str(listcoord[i][1]) + "," + str(listcoord[i][0]) + "," + "pmgns")
 	sum_mark=sum(Marklist)/len(Marklist)
 	return flaglist,sum_mark
 
