@@ -3,7 +3,7 @@ import urllib.request
 import requests
 import os
 
-key = "&key=" + "AIzaSyCHxteYGq8iTPyZGf_KO0yAF4Wo_EfHHaU"
+key = "&key=" + "xxxx"
 DownLoc = "pictures_out/"
 
 def GetStreetLL(Lat,Lon,Head,File,SaveLoc):
