@@ -9,6 +9,7 @@ import logging as log
 from time import time
 from openvino.inference_engine import IECore
 import glob
+from PIL import Image
 
 def class_size(cl1,cl2,cl3,cl4,cl5,cl6,cl7,cl8,cl9,cl10,cl11,cl12,cl13,cl14,cl15,cl16,cl17,cl18,cl19,cl20,cl21):
     sum_cl=cl1+cl2+cl3+cl4+cl5+cl6+cl7+cl8+cl9+cl10+cl11+cl12+cl13+cl14+cl15+cl16+cl17+cl18+cl19+cl20+cl21
@@ -34,7 +35,6 @@ def class_size(cl1,cl2,cl3,cl4,cl5,cl6,cl7,cl8,cl9,cl10,cl11,cl12,cl13,cl14,cl15
     cl20_ratio=cl20/sum_cl
     cl21_ratio=cl21/sum_cl
     sum_cl_ratio=cl1_ratio+cl2_ratio+cl3_ratio+cl4_ratio+cl5_ratio+cl6_ratio+cl7_ratio+cl8_ratio+cl9_ratio+cl10_ratio+cl11_ratio+cl12_ratio+cl13_ratio+cl14_ratio+cl15_ratio+cl16_ratio+cl17_ratio+cl18_ratio+cl19_ratio+cl20_ratio+cl21_ratio
-    '''
     print("Resalt raiting:"
           "\n road          ", cl1_ratio,
           "\n sidewalk      ", cl2_ratio,
@@ -57,31 +57,14 @@ def class_size(cl1,cl2,cl3,cl4,cl5,cl6,cl7,cl8,cl9,cl10,cl11,cl12,cl13,cl14,cl15
           "\n bicycle       ", cl19_ratio,
           "\n ego-vehicle?? ", cl20_ratio,
           "\n ?????         ", cl21_ratio)
-    '''
     return comfort_level(cl1_ratio,cl2_ratio,cl3_ratio,cl4_ratio,cl5_ratio,cl6_ratio,cl7_ratio,cl8_ratio,cl9_ratio,cl10_ratio,cl11_ratio,cl12_ratio,cl13_ratio,cl14_ratio,cl15_ratio,cl16_ratio,cl17_ratio,cl18_ratio,cl19_ratio,cl20_ratio,cl21_ratio)
-
-    #print(sum_cl_ratio)
-    #print(sum_cl)
 
 def comfort_level(cl1,cl2,cl3,cl4,cl5,cl6,cl7,cl8,cl9,cl10,cl11,cl12,cl13,cl14,cl15,cl16,cl17,cl18,cl19,cl20,cl21):
     weight=[0, 8, 0, 0, -10, 0, 0, 0, 10, 10, 0, 0, 0, 0, -10, 0, 0, 0, 0, 0, 0]
     sum_comf=weight[0]*cl1+weight[1]*cl2+weight[2]*cl3+weight[3]*cl4+weight[4]*cl5+weight[5]*cl6+weight[6]*cl7+weight[7]*cl8+weight[8]*cl9+weight[9]*cl10+weight[10]*cl11+weight[11]*cl12+weight[12]*cl13+weight[13]*cl14+weight[14]*cl15+weight[15]*cl16+weight[16]*cl17+weight[17]*cl18+weight[18]*cl19+weight[19]*cl20+weight[20]*cl21
     return sum_comf
-    '''
-    print("Comfortable mark:  ", sum_comf)
-    if sum_comf<0:
-        print("Сomfort - bad")
-    elif sum_comf<=3:
-        print("Сomfort - ok")
-    elif sum_comf<=8:
-        print("Сomfort - good")
-    else:
-        print ("Сomfort - perfectly")
-    '''
 
-
-
-def imagesCoordinatesSegmentation(n):
+def imagesCoordinatesSegmentation():
     classes_color_map = [
     (150, 150, 150),# road (и вода тут) cl1
     (58, 55, 169),#sidewalk(бордюр,брусчатка) cl2
@@ -105,19 +88,26 @@ def imagesCoordinatesSegmentation(n):
     (178, 101, 130),#ego-vehicle??? cl20
     (71, 30, 204),#????? cl21
     ]
-    #N = len(classes_color_map)
     model = 'semantic-segmentation-adas-0001.xml'
     cpu_extension=None
     device='CPU'
     number_top=10
 
-    folders = glob.glob('pictures_in/'+str(n))
+    folders = glob.glob('pictures_in')
     input = []
     for file in folders:
-           for f in glob.glob(file+'/*.png'):
+        for f in glob.glob(file+'/*.png'):
+            im = Image.open(f).convert('RGB')
+            numberallpixels=0
+            n=0
+            for pixel in im.getdata():
+                numberallpixels+=1
+                if pixel == (228, 227, 223):
+                    n+=1
+                if (n >= 50000):
+                    break
+            if (n < 50000):
                input.append(f)
-
-
     log.basicConfig(format="[ %(levelname)s ] %(message)s", level=log.INFO, stream=sys.stdout)
     log.info("Creating Inference Engine")
     ie = IECore()
@@ -144,7 +134,6 @@ def imagesCoordinatesSegmentation(n):
     out_blob = next(iter(net.outputs))
     net.batch_size = len(input)
     
-
     # NB: This is required to load the image as uint8 np.array
     #     Without this step the input blob is loaded in FP32 precision,
     #     this requires additional operation and more memory.
@@ -180,29 +169,33 @@ def imagesCoordinatesSegmentation(n):
         _, _, out_h, out_w = res.shape
     else:
         raise Exception("Unexpected output blob shape {}. Only 4D and 3D output blobs are supported".format(res.shape))  
-        
-    cl1=0
-    cl2=0
-    cl3=0
-    cl4=0
-    cl5=0
-    cl6=0
-    cl7=0
-    cl8=0
-    cl9=0
-    cl10=0
-    cl11=0
-    cl12=0
-    cl13=0
-    cl14=0
-    cl15=0
-    cl16=0
-    cl17=0
-    cl18=0
-    cl19=0
-    cl20=0
-    cl21=0
+
+    n=0
+    marklist=[]
     for batch, data in enumerate(res):
+        if (n%3==0):
+            cl1=0
+            cl2=0
+            cl3=0
+            cl4=0
+            cl5=0
+            cl6=0
+            cl7=0
+            cl8=0
+            cl9=0
+            cl10=0
+            cl11=0
+            cl12=0
+            cl13=0
+            cl14=0
+            cl15=0
+            cl16=0
+            cl17=0
+            cl18=0
+            cl19=0
+            cl20=0
+            cl21=0  
+        n+=1          
         classes_map = np.zeros(shape=(out_h, out_w, 3), dtype=np.int)
         for i in range(out_h):
             for j in range(out_w):
@@ -253,9 +246,11 @@ def imagesCoordinatesSegmentation(n):
                     cl20+=1
                 else:
                     cl21+=1
-        out_img = os.path.join(os.path.dirname('__file__'), "pictures_out/"+str(n)+"/out_{}.bmp".format(batch))
+        if (n%3==0):
+            marklist.append(class_size(cl1,cl2,cl3,cl4,cl5,cl6,cl7,cl8,cl9,cl10,cl11,cl12,cl13,cl14,cl15,cl16,cl17,cl18,cl19,cl20,cl21))
+        out_img = os.path.join(os.path.dirname('__file__'), "pictures_out/out_{}.bmp".format(batch))
         cv2.imwrite(out_img, classes_map)
         log.info("Result image was saved to {}".format(out_img))
-    return class_size(cl1,cl2,cl3,cl4,cl5,cl6,cl7,cl8,cl9,cl10,cl11,cl12,cl13,cl14,cl15,cl16,cl17,cl18,cl19,cl20,cl21)
+    return marklist
     log.info("This demo is an API example, for any performance measurements please use the dedicated benchmark_app tool "
              "from the openVINO toolkit\n")
