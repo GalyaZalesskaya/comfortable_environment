@@ -43,7 +43,6 @@ def indexAnDropoutErrorImageFiles(directory):
                     path = os.path.join(os.path.abspath(os.path.dirname('__file__')), f)
                     os.remove(path)
                     break
-    print("listindexerrorimages ", listindexerrorimages)
     return listindexerrorimages
 
 
@@ -96,9 +95,8 @@ def findCoordAroundPoint(Lat, Lon, radius, directory):
 		upright[1]+=steplon
 		listcoord.append([round(upright[0], 6), round(upright[1], 6)])
 		print(listcoord)
-	imagesCoordinatesAPI(listcoord , Down_lock_in)   #раскомментировать если хочешь делать запрос API
+	imagesCoordinatesAPI(listcoord , Down_lock_in)
 	indexeserror = list(set(indexAnDropoutErrorImageFiles(directory)))
-	print("indexeserror", indexeserror)
 	return [listcoord , indexeserror]
 
 def markComfortArea(listcoord, indexeserror):
