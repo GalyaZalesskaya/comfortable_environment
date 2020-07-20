@@ -15,7 +15,7 @@ Down_lock_in = 'pictures_in'
 
 def class_size(road,sidewalk,building,wall,fence,pole,traffic_light,traffic_sign,vegetation,terrain,sky,
                    person,rider,car,truck,
-                   bus,train,motorcycle,bicycle,ego_vehicle,cl21):
+                   bus,train,motorcycle,bicycle,ego_vehicle,cl21,weight):
     sum_cl=road+sidewalk+building+wall+fence+pole+traffic_light+traffic_sign+vegetation+terrain+sky+person+rider+car+truck+bus+train+motorcycle+bicycle+ego_vehicle+cl21
     #print("Sum_cl",sum_cl)
     cl_size=[]
@@ -41,10 +41,9 @@ def class_size(road,sidewalk,building,wall,fence,pole,traffic_light,traffic_sign
     cl_size.append(ego_vehicle/sum_cl)
     cl_size.append(cl21/sum_cl)
     #print(cl_size)
-    return comfort_level(cl_size)
+    return comfort_level(cl_size, weight)
 
-def comfort_level(cl_size):
-    weight=[0, 8, 0, 0, -10, 0, 0, 0, 10, 10, 0, 0, 0, 0, -10, 0, 0, 0, 0, 0, 0]
+def comfort_level(cl_size, weight):
     weight_comf=[a*b for a,b in zip(cl_size,weight)]
     sum_comf=sum(weight_comf)
     return sum_comf
@@ -224,7 +223,7 @@ def imagesCoordinatesSegmentation():
                     cl21 += 1
         if (n % 3 == 0):
             marklist.append(class_size(road, sidewalk, building, wall, fence, pole, traffic_light, traffic_sign, vegetation, terrain, sky,
-               person, rider, car, truck, bus, train, motorcycle, bicycle, ego_vehicle, cl21))
+               person, rider, car, truck, bus, train, motorcycle, bicycle, ego_vehicle, cl21,weight))
         out_img = os.path.join(os.path.dirname('__file__'), "pictures_out/out_{}.bmp".format(batch))
         cv2.imwrite(out_img, classes_map)
         log.info("Result image was saved to {}".format(out_img))

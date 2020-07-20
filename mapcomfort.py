@@ -8,12 +8,85 @@ from map_marks import Map
 from PIL import Image
 #import math as m
 
-r=400.
+print("Введите город в котором вы хотите оценить комфортность?")
+City = str(input())
+print("Введите улицу")
+Street =str(input())
+print("Введите дом")
+Dom= str(input())
+print("Введите радиус")
+r= int(input())
+
+weight = [0, 8, 0, 0, -10, 0, 0, 0, 10, 10, 0, 0, 0, 0, -10, 0, 0, 0, 0, 0, 0]
+
+flag = True
+while (flag):
+	print("Положительно ли вы относитесь к светофорам? Поставьте + если да, - если нет")
+	mark = input()
+	if (mark == "+"):
+		weight[6] = 10
+		flag = False
+	elif (mark == "-"):
+		weight[6] = -10
+		flag = False
+	else:
+		("Вы ввели некорректные данные, попробуйте  еще")
+
+flag = True
+while (flag):
+	print("Положительно ли вы относитесь к дорожным знакам? Поставьте + если да, - если нет")
+	mark = input()
+	if (mark == "+"):
+		weight[7] = 10
+		flag = False
+	elif (mark == "-"):
+		weight[7] = -10
+		flag = False
+	else:
+		("Вы ввели некорректные данные, попробуйте  еще")
+
+flag = True
+while (flag):
+	print("Положительно ли вы относитесь к людям? Поставьте + если да, - если нет")
+	mark = input()
+	if (mark == "+"):
+		weight[11] = 10
+		flag = False
+	elif (mark == "-"):
+		weight[11] = -10
+		flag = False
+	else:
+		("Вы ввели некорректные данные, попробуйте  еще")
+
+flag = True
+while (flag):
+	print("Положительно ли вы относитесь к машинам на дороге? Поставьте + если да, - если нет")
+	mark = input()
+	if (mark == "+"):
+		weight[13] = 10
+		flag = False
+	elif (mark == "-"):
+		weight[13] = -10
+		flag = False
+	else:
+		("Вы ввели некорректные данные, попробуйте  еще")
+
+flag = True
+while (flag):
+	print("Положительно ли вы относитесь к велосипедам на дороге? Поставьте + если да, - если нет")
+	mark = input()
+	if (mark == "+"):
+		weight[18] = 10
+		flag = False
+	elif (mark == "-"):
+		weight[18] = -10
+		flag = False
+	else:
+		("Вы ввели некорректные данные, попробуйте  еще")
+
 dlat = 0.009 #  шаг dlat 0.009 = 1 км на север
 dlon = 0.016 #  шаг dlon 0.016 = 1 км на восток (получено имперически)
-City= "Нижний Новогород"
-Street = "Донецкая"
-Dom = "7"
+
 Down_lock_in = 'pictures_in'
 Down_lock_out = 'pictures_out'
 Down_lock_tmp = 'pictures_tmp'
@@ -118,16 +191,16 @@ def markComfortArea(listcoord, indexeserror):
 		Marklist[i] = Marklist[i] + addition_mark
 		print
 		if (i == 0):
-			if Marklist[i] < 0.5:
+			if Marklist[i] < 2:
 				flaglist.append(str(listcoord[i][1]) + "," + str(listcoord[i][0]) + "," + "pm2rdm")
-			elif Marklist[i] <= 3:
+			elif Marklist[i] <= 6:
 				flaglist.append(str(listcoord[i][1]) + "," + str(listcoord[i][0]) + "," + "pm2ywm")
 			else:
 				flaglist.append(str(listcoord[i][1]) + "," + str(listcoord[i][0]) + "," + "pm2gnm")
 		else:
-			if Marklist[i] < 0.5:
+			if Marklist[i] < 2:
 				flaglist.append(str(listcoord[i][1]) + "," + str(listcoord[i][0]) + "," + "pmrds")
-			elif Marklist[i] <= 3:
+			elif Marklist[i] <= 6:
 				flaglist.append(str(listcoord[i][1]) + "," + str(listcoord[i][0]) + "," + "pmyws")
 			else:
 				flaglist.append(str(listcoord[i][1]) + "," + str(listcoord[i][0]) + "," + "pmgns")
@@ -139,7 +212,7 @@ def moveFilesOtherFolder(lok_in, lok_out, radius):
     os.mkdir(lok_out+"/"+str(central_point_lat)+","+str(central_point_lon)+","+str(radius))
     for file in folders:
         for f in glob.glob(file+'/*.png'):
-            shutil.copy2(f,lok_out+"//"+ str(central_point_lat) + "," + str(central_point_lon)+"//")
+            shutil.copy2(f,lok_out+"//"+str(central_point_lat)+","+str(central_point_lon)+","+str(radius)+"//")
 
 def removeFilesInFolder(lok):
     folders = glob.glob(lok)

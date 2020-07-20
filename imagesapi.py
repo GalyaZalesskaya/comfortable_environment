@@ -3,7 +3,7 @@ import urllib.request
 import requests
 from yandex_geocoder import Client
 
-key = "&key=" + "xxxxx"
+key = "&key=" + "xxxxxxx"
 DownLoc = "pictures_in"
 
 def GetStreetLL(Lat,Lon,Head,File,SaveLoc):
@@ -31,6 +31,20 @@ def imagesCoordinatesAPI(DataList, SaveLoc):
             fi = "Image_" + str(i)+"_"+str(head)
             temp = GetStreetLL(lat,lon,head,fi,SaveLoc)
             fi=""
+
+def imagesCoordinatesAPI_change(lat, lon, indexeserror,SaveLoc):
+    for a in range(0,3):
+        if a==0:
+            head=0
+        elif a==1:
+            head=120
+        else:
+            head=240
+        lat=DataList[i][0]
+        lon=DataList[i][1]
+        fi = "Image_" + str(indexeserror)+"_"+str(head)
+        temp = GetStreetLL(lat,lon,head,fi,SaveLoc)
+        fi=""
 
 def adressToCoordinate(city, street, dom):
     client = Client("1eaf6c9f-0eab-4fe5-b3cb-51c3b819f7b8")
