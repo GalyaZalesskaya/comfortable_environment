@@ -41,14 +41,14 @@ def class_size(road,sidewalk,building,wall,fence,pole,traffic_light,traffic_sign
     cl_size.append(ego_vehicle/sum_cl)
     cl_size.append(cl21/sum_cl)
     #print(cl_size)
-    return comfort_level(cl_size, weight)
+    return comfort_level(cl_size,weight)
 
-def comfort_level(cl_size, weight):
+def comfort_level(cl_size,weight):
     weight_comf=[a*b for a,b in zip(cl_size,weight)]
     sum_comf=sum(weight_comf)
     return sum_comf
 
-def imagesCoordinatesSegmentation():
+def imagesCoordinatesSegmentation(weight):
     model = "semantic-segmentation-adas-0001.xml"
     cpu_extension = None
     device = 'CPU'
@@ -228,6 +228,3 @@ def imagesCoordinatesSegmentation():
         cv2.imwrite(out_img, classes_map)
         log.info("Result image was saved to {}".format(out_img))
     return marklist
-    log.info(
-        "This demo is an API example, for any performance measurements please use the dedicated benchmark_app tool "
-        "from the openVINO toolkit\n")

@@ -1,4 +1,5 @@
 import requests, sys, os
+from PIL import Image
 
 def Map(lat,lon,mark,rad,com_l):
     lat = lat
@@ -24,9 +25,9 @@ def Map(lat,lon,mark,rad,com_l):
     d_lat=b_lat
     d_lon=c_lon
     color_dict = {0: 'FFC9C9A0', 1: 'F9FFB5A0', 2: 'D0FFB8A0'}
-    if com_l < 0:
+    if com_l < 2:
         color = "c:" + color_dict[0] + ",f:" + color_dict[0] + ","
-    elif com_l <= 2:
+    elif com_l <= 6:
         color = "c:" + color_dict[1] + ",f:" + color_dict[1] + ","
     else:
         color = "c:" + color_dict[2] + ",f:" + color_dict[2] + ","
@@ -47,4 +48,6 @@ def load_map(ll,zoom,mark,square):
     map_file = "map_com_level.jpg"
     with open(map_file, "wb") as file:
         file.write(response.content)
+    img = Image.open(map_file)
+    img.show()
     return map_file
