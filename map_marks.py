@@ -33,18 +33,18 @@ def Map(lat,lon,mark,rad,com_l):
         color = "c:" + color_dict[2] + ",f:" + color_dict[2] + ","
     square = color + str(a_lon) + "," + str(a_lat) + "," + str(b_lon) + "," + str(b_lat) + "," + str(d_lon) + "," + str(
         d_lat) + "," + str(c_lon) + "," + str(c_lat) + "," + str(a_lon) + "," + str(a_lat)
-    print("len mark:", len(mark))
+    #print("len mark:", len(mark))
     mark_v=""
     for i in range(0, len(mark) - 1):
         mark_v = mark_v+mark[i] + "~" + mark[i + 1] + "~"
     mark_v = mark_v[:-1]
-    print("mark", mark_v)
+    #print("mark", mark_v)
     load_map(str(lon) + "," + str(lat),zoom,mark_v,square)
 
 def load_map(ll,zoom,mark,square):
     map_request = "http://static-maps.yandex.ru/1.x/?ll={ll}&pl={square}&z={z}&l={type}&pt={mark}".format(ll=ll, z=zoom, type="map",mark=mark,square=square)
     response = requests.get(map_request)
-    print(map_request)
+    #print(map_request)
     map_file = "map_com_level.jpg"
     with open(map_file, "wb") as file:
         file.write(response.content)
