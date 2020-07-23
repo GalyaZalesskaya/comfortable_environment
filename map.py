@@ -46,6 +46,6 @@ def marksMapsWaterVegatation(lat, lon,rad):
             vegetation += 1
     water_ratio = water / k
     vegetation_ratio = vegetation / k
-    weight = [10, 10]
+    weight = [25, 20]
     sum_mark = weight[0]*water_ratio + weight[1]*vegetation_ratio
     return sum_mark
